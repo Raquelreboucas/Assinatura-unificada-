@@ -1,0 +1,853 @@
+/*
+ * Estilos do assinador. Só layout e superfícies que o 1DS não tem pronto
+ * (visualizador de PDF, cartão de opção, ilustração). Todo valor sai de token;
+ * as poucas medidas em px são geometria de documento ou de ilustração, cada
+ * uma com o comentário do porquê.
+ */
+
+body {
+  margin: 0;
+  font-family: var(--umds-semantic-font-family-base);
+  background: var(--umds-semantic-color-background-light);
+  color: var(--umds-semantic-color-neutral-dark-pure);
+}
+
+/* ── Moldura ─────────────────────────────────────────────────────────────── */
+
+/* A página inteira rola (o documento não fica preso numa caixa com scroll
+   próprio); só o rodapé de ações fica fixo. */
+.ass-moldura {
+  /* Altura do rodapé: respiro de 12 em cima e embaixo + botão md de 40. */
+  --ass-rodape-altura: calc(var(--umds-primitive-spacing-mini) * 2 + var(--umds-primitive-spacing-sm));
+
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.ass-moldura__conteudo {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Com rodapé fixo, o fim do conteúdo não pode ficar escondido atrás dele. */
+.ass-moldura--com-rodape .ass-moldura__conteudo {
+  padding-bottom: var(--ass-rodape-altura);
+}
+
+.ass-moldura__conteudo--muted {
+  background: var(--umds-semantic-color-background-light);
+}
+
+.ass-moldura__conteudo--surface {
+  background: var(--umds-semantic-color-background-white);
+}
+
+.ass-topo {
+  flex: 0 0 auto;
+}
+
+.ass-topo__usuario {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  border-radius: var(--umds-primitive-border-radius-pill);
+}
+
+.ass-topo__usuario:focus-visible {
+  outline: 2px solid var(--umds-semantic-color-primary-pure);
+  outline-offset: 2px;
+}
+
+.ass-topo__menu {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--umds-primitive-spacing-quarck);
+  padding-inline: var(--umds-primitive-spacing-mini);
+  color: var(--umds-semantic-color-primary-dark);
+}
+
+.ass-topo__nome {
+  line-height: var(--umds-primitive-font-line-height-default);
+}
+
+/* Barra de ações por cima da borda de baixo, como no Figma. */
+.ass-rodape {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 1;
+  padding: var(--umds-primitive-spacing-mini) var(--umds-primitive-spacing-sm);
+  background: var(--umds-semantic-color-neutral-light-pure);
+  box-shadow: var(--umds-semantic-shadow-top-md);
+}
+
+.ass-centro {
+  flex: 1 1 auto;
+  padding: var(--umds-primitive-spacing-xs) var(--umds-primitive-spacing-sm);
+  box-sizing: border-box;
+}
+
+/* ── Texto ───────────────────────────────────────────────────────────────── */
+
+/* O Figma usa o estilo Paragraph (altura de linha 170%); o Text usa 150%. */
+.ass-paragrafo {
+  line-height: var(--umds-semantic-typography-paragraph-line-height);
+}
+
+/* Linhas da identificação e do subtítulo de carregamento: 133% no Figma. */
+.ass-texto-compacto {
+  line-height: var(--umds-semantic-typography-label-line-height);
+}
+
+/* O Text não tem cor para neutral-dark-medium (legenda e apoio do Figma). */
+.ass-texto-suave {
+  color: var(--umds-semantic-color-neutral-dark-medium);
+}
+
+.ass-largura-total {
+  width: 100%;
+}
+
+/* ── Envelope: visualizador + painel lateral ─────────────────────────────── */
+
+.ass-envelope {
+  display: flex;
+  gap: var(--umds-primitive-spacing-xxs);
+  /* O painel acompanha a altura do visualizador. */
+  align-items: stretch;
+  padding: var(--umds-primitive-spacing-xs);
+  box-sizing: border-box;
+  --ass-envelope-respiro: var(--umds-primitive-spacing-xs);
+}
+
+.ass-envelope--compacto {
+  padding-block: var(--umds-primitive-spacing-xxs);
+  --ass-envelope-respiro: var(--umds-primitive-spacing-xxs);
+}
+
+/* O painel tem a mesma altura do visualizador (a linha estica os dois); se o
+   conteúdo passar disso, rola por dentro. */
+.ass-painel {
+  /* 1ds: 474px é a largura do painel no Figma; não é espaçamento. */
+  flex: 0 0 474px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--umds-primitive-spacing-xxxs);
+  padding: var(--umds-primitive-spacing-xxs);
+  box-sizing: border-box;
+  overflow-y: auto;
+  background: var(--umds-semantic-color-background-white);
+  border: var(--umds-primitive-border-width-hairline) solid var(--umds-semantic-color-neutral-light-down);
+  border-radius: var(--umds-primitive-border-radius-sm);
+  box-shadow: var(--umds-semantic-shadow-center-md);
+}
+
+/* Painel de detalhes (quem já assinou): altura do conteúdo, sem esticar até a
+   altura do visualizador. */
+.ass-painel--hug {
+  align-self: flex-start;
+}
+
+/* Painel de resultado (assinando / assinada): a mensagem centralizada, ao lado do PDF. */
+.ass-painel--centro {
+  align-items: center;
+  justify-content: center;
+  gap: var(--umds-primitive-spacing-xxs);
+  text-align: center;
+}
+
+/* Resultado sem o cartão branco: só a mensagem sobre o fundo da tela. */
+.ass-painel--sem-fundo {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.ass-assinaturas {
+  padding-block: var(--umds-primitive-spacing-xxs);
+}
+
+.ass-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ass-lista__item {
+  padding: var(--umds-primitive-spacing-mini) var(--umds-primitive-spacing-xxxs);
+}
+
+/* O botão de editar o papel fica na linha do texto, sem empurrar a altura dela. */
+.ass-botao-inline {
+  margin-block: calc(var(--umds-primitive-spacing-quarck) * -1);
+}
+
+/* ── Opções de tipo de assinatura ────────────────────────────────────────── */
+
+.ass-opcao {
+  padding: var(--umds-primitive-spacing-xxxs);
+  background: var(--umds-semantic-color-background-white);
+  border: var(--umds-primitive-border-width-hairline) solid var(--umds-semantic-color-neutral-light-down);
+  border-radius: var(--umds-primitive-border-radius-sm);
+  box-shadow: var(--umds-semantic-shadow-center-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--umds-semantic-motion-duration-fast) var(--umds-semantic-motion-easing-standard),
+    border-color var(--umds-semantic-motion-duration-fast) var(--umds-semantic-motion-easing-standard),
+    box-shadow var(--umds-semantic-motion-duration-fast) var(--umds-semantic-motion-easing-standard);
+}
+
+/* Hover: o cartão ganha elevação, para mostrar que é clicável. */
+.ass-opcao:hover {
+  border-color: var(--umds-semantic-color-primary-medium);
+  box-shadow: var(--umds-semantic-shadow-center-md);
+}
+
+/* Vem depois do hover: o selecionado mantém a borda primary-pure no hover. */
+.ass-opcao--selecionada {
+  background: var(--umds-semantic-color-primary-light);
+  border-color: var(--umds-semantic-color-primary-pure);
+}
+
+/* Cartão do gov.br: a escolha é o botão do título, esticado sobre o cartão todo
+   (::after), e o link "clique aqui" fica por cima dele (z-index). */
+.ass-opcao--govbr {
+  position: relative;
+}
+
+.ass-opcao__acao {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.ass-opcao__acao::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+/* O foco do botão esticado aparece no cartão inteiro. */
+.ass-opcao__acao:focus-visible {
+  outline: none;
+}
+
+.ass-opcao--govbr:has(.ass-opcao__acao:focus-visible) {
+  outline: 2px solid var(--umds-semantic-color-primary-pure);
+  outline-offset: 2px;
+}
+
+.ass-opcao__link-acima {
+  position: relative;
+  z-index: 1;
+}
+
+/* Logo do gov.br no canto direito, sem moldura, como o da 1Doc e o da ICP-Brasil. */
+.ass-opcao__logo-govbr {
+  display: block;
+  flex: 0 0 auto;
+  /* 48px de largura (o SVG tem 64): perto dos 40px do Logo da 1Doc. */
+  width: var(--umds-primitive-spacing-md);
+  height: auto;
+}
+
+.ass-opcao__marca {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* 42px: a moldura do selo no Figma (40 + 2). */
+  width: calc(var(--umds-primitive-spacing-sm) + var(--umds-primitive-spacing-micro));
+  border-radius: var(--umds-primitive-border-radius-sm);
+  background: var(--umds-semantic-color-background-white);
+}
+
+/* Modal de papel: rótulo + campo (~72) + lista com os 6 papéis (~231) cabem
+   no corpo sem rolagem (40 × 7 + 24 = 304). */
+.ass-papel {
+  min-height: calc(var(--umds-primitive-spacing-sm) * 7 + var(--umds-primitive-spacing-xxs));
+}
+
+/* Aviso "Ops..." (externo logado com a conta interna): mensagem centralizada
+   na página; a largura de leitura limita as linhas do texto. */
+.ass-ops__mensagem {
+  /* 1ds: 560px é a mesma largura de leitura das telas de conclusão. */
+  max-width: 560px;
+}
+
+/* "Confirme seus dados" (externo sem login): coluna estreita no centro. */
+.ass-confirmar {
+  /* 1ds: 480px é a largura da coluna na referência enviada. */
+  max-width: 480px;
+}
+
+.ass-confirmar__seguro {
+  color: var(--umds-semantic-color-primary-pure);
+}
+
+/* Link desabilitado que ainda recebe o clique: o wrapper fica com o clique e o
+   foco, e o Link por dentro só desenha. Não repinta o componente. */
+.ass-link-espera {
+  display: inline-flex;
+  cursor: pointer;
+  border-radius: var(--umds-primitive-border-radius-xs);
+}
+
+.ass-link-espera > * {
+  pointer-events: none;
+}
+
+.ass-link-espera:focus-visible {
+  outline: 2px solid var(--umds-semantic-color-primary-pure);
+  outline-offset: 2px;
+}
+
+/* Contador de segundos do reenvio do token: algarismos de largura fixa, para o
+   texto não "pular" a cada segundo e empurrar o link ao lado. */
+.ass-contador {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Janela do popup do gov.br (simulação do protótipo). */
+.ass-popup {
+  min-height: 100dvh;
+  padding: var(--umds-primitive-spacing-xxxs);
+  box-sizing: border-box;
+  background: var(--umds-semantic-color-background-light);
+}
+
+.ass-popup__caixa {
+  /* 1ds: 440px cabe na janela de 480px do popup. */
+  max-width: 440px;
+}
+
+/* ── Carregamento ────────────────────────────────────────────────────────── */
+
+/* 80px: o dobro do Logo regular, como no Figma (o Logo não tem tamanho grande). */
+.ass-centro .ass-logo-grande,
+.ass-painel .ass-logo-grande {
+  width: calc(var(--umds-primitive-spacing-sm) * 2);
+}
+
+/* ── Visualizador de PDF ─────────────────────────────────────────────────── */
+
+.ass-pdf {
+  /* 1ds: o papel do documento no visualizador tem 560×792 no Figma. */
+  --ass-pagina-largura: 560px;
+  --ass-pagina-altura: 792px;
+  /* Miniatura = a página a 18% (100,8×142,56 no Figma). */
+  --ass-miniatura-escala: 0.18;
+  /* Altura da barra: respiro de 12 em cima e embaixo + botão de ícone xs (26). */
+  --ass-barra-altura: calc(var(--umds-primitive-spacing-mini) * 2 + var(--umds-primitive-spacing-xxs) + var(--umds-primitive-spacing-micro));
+  /* Altura de uma folha inteira: barra + respiro + papel já encolhido para a
+     largura (--ass-ajuste vem do VisualizadorPdf) + bordas. */
+  --ass-altura-folha: calc(
+    var(--ass-barra-altura) + var(--umds-primitive-spacing-xxs) * 2 +
+      var(--ass-pagina-altura) * var(--ass-ajuste, 1) + var(--umds-primitive-border-width-hairline) * 2
+  );
+
+  flex: 1 1 auto;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  /* O visualizador tem a altura da primeira folha inteira e rola só por
+     dentro; o que passa da janela, a página rola. */
+  height: var(--ass-altura-folha);
+  overflow: hidden;
+  background: var(--umds-semantic-color-neutral-dark-medium);
+  border: var(--umds-primitive-border-width-hairline) solid var(--umds-semantic-color-neutral-light-down);
+  border-radius: var(--umds-primitive-border-radius-sm);
+}
+
+.ass-pdf__barra {
+  flex: 0 0 auto;
+  padding: var(--umds-primitive-spacing-mini) var(--umds-primitive-spacing-xxxs);
+  background: var(--umds-semantic-color-neutral-dark-down);
+  overflow: hidden;
+}
+
+.ass-pdf__nome,
+.ass-pdf__texto {
+  color: var(--umds-semantic-color-neutral-light-pure);
+  white-space: nowrap;
+}
+
+.ass-pdf__campo {
+  display: inline-flex;
+  padding: var(--umds-primitive-spacing-quarck) var(--umds-primitive-spacing-nano);
+  border-radius: var(--umds-primitive-border-radius-xs);
+  background: var(--umds-semantic-color-neutral-dark-pure);
+  color: var(--umds-semantic-color-neutral-light-pure);
+  letter-spacing: var(--umds-semantic-typography-label-letter-spacing);
+}
+
+.ass-pdf__divisor {
+  flex: 0 0 auto;
+  width: var(--umds-primitive-border-width-hairline);
+  height: var(--umds-primitive-spacing-xxs);
+  background: var(--umds-semantic-color-neutral-dark-medium);
+}
+
+.ass-pdf__corpo {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+}
+
+.ass-pdf__miniaturas {
+  /* 152px: a coluna de miniaturas no Figma (miniatura + bordas + respiro). */
+  flex: 0 0 152px;
+  background: var(--umds-semantic-color-neutral-dark-down);
+  /* Miniaturas e páginas rolam cada uma por dentro, sem passar o scroll para a
+     página quando chegam ao fim. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.ass-pdf__miniaturas-lista {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--umds-primitive-spacing-xxs);
+  padding: var(--umds-primitive-spacing-xxxs);
+}
+
+.ass-miniatura {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--umds-primitive-spacing-nano);
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ass-miniatura:focus-visible {
+  outline: 2px solid var(--umds-semantic-color-neutral-light-pure);
+  outline-offset: 2px;
+  border-radius: var(--umds-primitive-border-radius-xs);
+}
+
+.ass-miniatura__borda {
+  display: block;
+  padding: var(--umds-primitive-spacing-quarck);
+  border-radius: var(--umds-primitive-border-radius-xs);
+}
+
+.ass-miniatura__borda--ativa {
+  background: var(--umds-semantic-color-primary-medium);
+}
+
+.ass-miniatura__recorte {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  width: calc(var(--ass-pagina-largura) * var(--ass-miniatura-escala));
+  height: calc(var(--ass-pagina-altura) * var(--ass-miniatura-escala));
+  text-align: start;
+}
+
+.ass-miniatura__recorte .ass-pagina {
+  position: absolute;
+  inset: 0 auto auto 0;
+  transform: scale(var(--ass-miniatura-escala));
+  transform-origin: 0 0;
+}
+
+.ass-pdf__paginas {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--umds-primitive-spacing-xxs);
+  padding: var(--umds-primitive-spacing-xxs);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.ass-pdf__pagina {
+  flex: 0 0 auto;
+  /* Ao ir para uma página pela miniatura, ela para com o respiro de cima. */
+  scroll-margin-top: var(--umds-primitive-spacing-xxs);
+}
+
+.ass-pagina {
+  box-sizing: border-box;
+  width: var(--ass-pagina-largura);
+  height: var(--ass-pagina-altura);
+  padding: var(--umds-primitive-spacing-sm);
+  overflow: hidden;
+  background: var(--umds-semantic-color-neutral-light-pure);
+  box-shadow: var(--umds-semantic-shadow-bottom-sm);
+}
+
+/* ── Ilustração "Envelope de assinatura" ─────────────────────────────────── */
+/* Geometria da ilustração exportada do Figma (256×200): é desenho, não layout,
+   então as posições ficam em px, como lá. */
+
+.ass-ilustracao {
+  position: relative;
+  flex: 0 0 auto;
+  width: 256px;
+  height: 200px;
+  overflow: hidden;
+}
+
+.ass-ilustracao > * {
+  position: absolute;
+  display: block;
+}
+
+.ass-ilustracao__halo { left: 44.8px; top: 12.8px; width: 166.4px; height: 166.4px; }
+.ass-ilustracao__onda { left: 32px; top: 0; width: 192px; height: 192px; opacity: 0.25; }
+.ass-ilustracao__ponto--1 { left: 24px; top: 41.6px; width: 8px; height: 8px; }
+.ass-ilustracao__ponto--2 { left: 222.4px; top: 33.6px; width: 11.2px; height: 11.2px; }
+.ass-ilustracao__ponto--3 { left: 17.6px; top: 140.8px; width: 6.4px; height: 6.4px; }
+.ass-ilustracao__ponto--4 { left: 227.2px; top: 147.2px; width: 9.6px; height: 9.6px; }
+.ass-ilustracao__ponto--5 { left: 83.2px; top: 11.2px; width: 6.4px; height: 6.4px; }
+.ass-ilustracao__ponto--6 { left: 179.2px; top: 174.4px; width: 8px; height: 8px; }
+
+/* O SVG do envelope traz a sombra: transborda 10% nos lados e 14,29% em cima e embaixo. */
+.ass-ilustracao__envelope { left: 64px; top: 76.8px; width: 128px; height: 89.6px; }
+.ass-ilustracao__envelope img {
+  position: absolute;
+  inset: -14.29% -10%;
+  width: 120%;
+  height: 128.58%;
+}
+
+.ass-ilustracao__aviao { left: 120px; top: 112px; width: 28.8px; height: 28.8px; }
+
+.ass-ilustracao__selo {
+  left: 158.4px;
+  top: 73.6px;
+  width: 41.6px;
+  height: 41.6px;
+  overflow: hidden;
+  border-radius: var(--umds-primitive-border-radius-pill);
+  background: var(--umds-semantic-color-background-white);
+  box-shadow: var(--umds-semantic-shadow-center-xs);
+}
+
+/* Tom negativo (recusa): as peças verdes trocam pelos tokens de feedback negativo. */
+.ass-ilustracao--negativo {
+  --ass-ilu-claro: var(--umds-semantic-color-feedback-negative-light);
+  --ass-ilu-forte: var(--umds-semantic-color-feedback-negative-pure);
+}
+
+.ass-ilustracao--negativo .ass-ilustracao__halo,
+.ass-ilustracao--negativo .ass-ilustracao__ponto--2 {
+  border-radius: var(--umds-primitive-border-radius-circular);
+  background: var(--ass-ilu-claro);
+}
+
+.ass-ilustracao--negativo .ass-ilustracao__ponto--6 {
+  border-radius: var(--umds-primitive-border-radius-circular);
+  background: var(--ass-ilu-forte);
+}
+
+.ass-ilustracao--negativo .ass-ilustracao__selo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ass-ilu-forte);
+}
+
+/* Ilustração "Saindo pela porta" (IlustracaoSaida): só tokens, para acompanhar o tema. */
+.ass-saida {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.ass-saida__halo {
+  fill: var(--umds-semantic-color-feedback-info-light);
+}
+
+.ass-saida__orbita {
+  fill: none;
+  stroke: var(--umds-semantic-color-neutral-light-down);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 5;
+  opacity: 0.6;
+}
+
+.ass-saida__ponto--azul { fill: var(--umds-semantic-color-primary-medium); }
+.ass-saida__ponto--azul-claro { fill: var(--umds-semantic-color-primary-light); }
+.ass-saida__ponto--laranja { fill: var(--umds-semantic-color-feedback-info-pure); }
+.ass-saida__ponto--laranja-claro { fill: var(--umds-semantic-color-feedback-info-light); }
+
+.ass-saida__chao {
+  fill: var(--umds-semantic-color-neutral-dark-medium);
+  opacity: 0.15;
+}
+
+.ass-saida__batente,
+.ass-saida__folha {
+  fill: var(--umds-semantic-color-neutral-light-pure);
+  stroke: var(--umds-semantic-color-neutral-light-down);
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+
+.ass-saida__vao {
+  fill: var(--umds-semantic-color-primary-light);
+}
+
+.ass-saida__macaneta {
+  fill: var(--umds-semantic-color-feedback-info-pure);
+}
+
+.ass-saida__cabeca {
+  fill: var(--umds-semantic-color-primary-dark);
+}
+
+.ass-saida__corpo {
+  fill: var(--umds-semantic-color-primary-pure);
+}
+
+.ass-saida__membro {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.ass-saida__membro--escuro {
+  stroke: var(--umds-semantic-color-primary-dark);
+  stroke-width: 7;
+}
+
+.ass-saida__membro--claro {
+  stroke: var(--umds-semantic-color-primary-pure);
+  stroke-width: 6;
+}
+
+.ass-saida__seta {
+  fill: none;
+  stroke: var(--umds-semantic-color-feedback-info-pure);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ass-ilustracao__selo img {
+  position: absolute;
+  left: 1.6px;
+  top: 1.6px;
+  width: 38.4px;
+  height: 38.4px;
+}
+
+/* ── Seletor de visualização (ferramenta do protótipo) ───────────────────── */
+/* Pílula escura flutuante e arrastável, por cima de tudo. Fundo: o azul-marinho
+   do tema (background-dark); destaques: branco translúcido sobre ele. */
+
+.ass-seletor {
+  --ass-seletor-realce: color-mix(in srgb, var(--umds-semantic-color-neutral-light-pure) 12%, transparent);
+  --ass-seletor-linha: color-mix(in srgb, var(--umds-semantic-color-neutral-light-pure) 16%, transparent);
+
+  position: fixed;
+  z-index: var(--umds-semantic-layer-toast);
+  font-family: var(--umds-semantic-font-family-base);
+  color: var(--umds-semantic-color-neutral-light-pure);
+}
+
+.ass-seletor__pilula {
+  display: flex;
+  align-items: center;
+  gap: var(--umds-primitive-spacing-mini);
+  padding: var(--umds-primitive-spacing-quarck) var(--umds-primitive-spacing-xxxs);
+  padding-inline-start: var(--umds-primitive-spacing-xxs);
+  border: 0;
+  border-radius: var(--umds-primitive-border-radius-pill);
+  background: var(--umds-semantic-color-background-dark);
+  color: inherit;
+  font: inherit;
+  box-shadow: var(--umds-semantic-shadow-center-xl);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.ass-seletor__pilula:active {
+  cursor: grabbing;
+}
+
+.ass-seletor__pilula:focus-visible,
+.ass-seletor__item:focus-visible {
+  outline: 2px solid var(--umds-semantic-color-primary-medium);
+  outline-offset: 2px;
+}
+
+.ass-seletor__rotulo,
+.ass-seletor__titulo {
+  letter-spacing: var(--umds-semantic-typography-label-letter-spacing);
+  color: var(--umds-semantic-color-neutral-dark-up);
+}
+
+.ass-seletor__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--umds-primitive-spacing-quarck);
+  padding: var(--umds-primitive-spacing-quarck) var(--umds-primitive-spacing-mini);
+  border-radius: var(--umds-primitive-border-radius-pill);
+  background: var(--umds-semantic-color-neutral-light-pure);
+  color: var(--umds-semantic-color-background-dark);
+  white-space: nowrap;
+}
+
+.ass-seletor__chip-descricao {
+  color: var(--umds-semantic-color-neutral-dark-down);
+}
+
+.ass-seletor__menu {
+  /* A posição horizontal vem do SeletorPerfil, para o menu caber na janela. */
+  position: absolute;
+  bottom: calc(100% + var(--umds-primitive-spacing-nano));
+  display: flex;
+  flex-direction: column;
+  gap: var(--umds-primitive-spacing-quarck);
+  /* 1ds: 340px é a largura do menu no print de referência. */
+  width: 340px;
+  max-width: calc(100vw - var(--umds-primitive-spacing-xxxs) * 2);
+  padding: var(--umds-primitive-spacing-nano);
+  box-sizing: border-box;
+  border-radius: var(--umds-primitive-border-radius-sm);
+  background: var(--umds-semantic-color-background-dark);
+  box-shadow: var(--umds-semantic-shadow-center-xl);
+}
+
+.ass-seletor__menu--abaixo {
+  top: calc(100% + var(--umds-primitive-spacing-nano));
+  bottom: auto;
+}
+
+.ass-seletor__titulo {
+  display: block;
+  padding: var(--umds-primitive-spacing-nano) var(--umds-primitive-spacing-mini);
+}
+
+.ass-seletor__item {
+  display: flex;
+  align-items: center;
+  gap: var(--umds-primitive-spacing-xxxs);
+  width: 100%;
+  padding: var(--umds-primitive-spacing-mini);
+  border: 0;
+  border-radius: var(--umds-primitive-border-radius-sm);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.ass-seletor__item:hover,
+.ass-seletor__item--marcado {
+  background: var(--ass-seletor-realce);
+}
+
+.ass-seletor__nome {
+  flex: 0 0 auto;
+  min-width: calc(var(--umds-primitive-spacing-xxl) - var(--umds-primitive-spacing-xxxs));
+}
+
+.ass-seletor__descricao {
+  flex: 1 1 auto;
+}
+
+@media (max-width: 767px) {
+  /* No celular a pílula mostra só o nome da visualização. */
+  .ass-seletor__rotulo,
+  .ass-seletor__chip-descricao {
+    display: none;
+  }
+}
+
+/* ── Responsivo ──────────────────────────────────────────────────────────── */
+/* Cortes do Grid do 1DS (media query não aceita var(), por isso o número):
+   abaixo de 1024px o visualizador e o painel empilham; abaixo de 768px é o
+   celular. */
+
+/* Na barra, só o nome do arquivo encolhe (com reticências); página, zoom e
+   ações mantêm o tamanho, sem se sobrepor em telas mais estreitas. */
+.ass-pdf__barra > * {
+  flex-shrink: 0;
+}
+
+.ass-pdf__barra > .ass-pdf__arquivo {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ass-pdf__nome {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 1023px) {
+  .ass-envelope {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* Empilhado, o painel vem logo abaixo do visualizador, na largura toda. */
+  .ass-envelope .ass-pdf {
+    flex: 0 0 auto;
+  }
+
+  .ass-painel {
+    flex: 0 0 auto;
+    position: static;
+    height: auto;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 767px) {
+  .ass-moldura .ass-topo {
+    padding-inline: var(--umds-primitive-spacing-xxxs);
+  }
+
+  .ass-rodape {
+    padding-inline: var(--umds-primitive-spacing-xxxs);
+  }
+
+  .ass-envelope,
+  .ass-envelope--compacto {
+    gap: var(--umds-primitive-spacing-xxxs);
+    padding: var(--umds-primitive-spacing-xxxs);
+  }
+
+  .ass-pdf__barra {
+    justify-content: space-between;
+  }
+
+
+
+  .ass-pdf__so-largo {
+    display: none;
+  }
+
+  .ass-painel {
+    padding: var(--umds-primitive-spacing-xxxs);
+  }
+
+  .ass-centro {
+    padding-inline: var(--umds-primitive-spacing-xxxs);
+  }
+}
