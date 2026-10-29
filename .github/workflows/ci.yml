@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # O .npmrc lê o token do Font Awesome Pro da variável FA_TOKEN.
+      - name: Instalar dependências
+        run: npm ci
+        env:
+          FA_TOKEN: ${{ secrets.FA_TOKEN }}
+
+      - name: Build (tsc + vite)
+        run: npm run build
